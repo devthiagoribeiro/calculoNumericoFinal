@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problema 3: Regressões - Cálculo Numérico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .back-link:hover {
+            opacity: 1;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .description {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+        }
+        
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        #resultado {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        #resultado h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .resultado-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #4caf50;
+        }
+        
+        .resultado-item strong {
+            color: #333;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .info-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        .regressao-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .regressao-card h4 {
+            color: #4caf50;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-link">← Voltar ao Menu</a>
+            <h1>📈 Problema 3: Regressões por Mínimos Quadrados</h1>
+            <p>Ajuste de curvas: Linear, Parabólica e Exponencial</p>
+        </header>
+        
+        <div class="content">
+            <div class="description">
+                <h3>Descrição do Problema</h3>
+                <p>Ajustar três tipos de curvas aos dados fornecidos usando o método dos mínimos quadrados:</p>
+                <ul style="margin-top: 10px; margin-left: 20px;">
+                    <li><strong>Linear:</strong> y = a + bx</li>
+                    <li><strong>Parabólica:</strong> y = a + bx + cx²</li>
+                    <li><strong>Exponencial:</strong> y = a·e^(bx)</li>
+                </ul>
+                <p style="margin-top: 10px;"><strong>Método utilizado:</strong> Mínimos Quadrados (implementado manualmente).</p>
+                <div class="info-box">
+                    <strong>Dados padrão (Questão 3):</strong><br>
+                    x = [0, 1.5, 2.6, 4.2, 6, 8.2, 10, 11.4]<br>
+                    F(x) = [18, 13, 11, 9, 6, 4, 2, 1]
+                </div>
+            </div>
+            
+            <form id="formRegressoes">
+                <div class="form-section">
+                    <h3>Dados para Regressão</h3>
+                    <div class="form-group">
+                        <label>Valores de x (separados por vírgula):</label>
+                        <input type="text" id="x_valores" value="0, 1.5, 2.6, 4.2, 6, 8.2, 10, 11.4" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Valores de y (separados por vírgula):</label>
+                        <input type="text" id="y_valores" value="18, 13, 11, 9, 6, 4, 2, 1" required>
+                    </div>
+                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                        <strong>Nota:</strong> Os valores devem estar na mesma ordem e ter o mesmo número de elementos.
+                    </p>
+                </div>
+                
+                <button type="submit">Calcular Regressões</button>
+            </form>
+            
+            <div id="resultado">
+                <h3>Resultados</h3>
+                <div id="conteudoResultado"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('formRegressoes').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const button = e.target.querySelector('button');
+            button.disabled = true;
+            button.textContent = 'Calculando...';
+            
+            const dados = {
+                x_valores: document.getElementById('x_valores').value,
+                y_valores: document.getElementById('y_valores').value
+            };
+            
+            try {
+                const response = await fetch('/calcular_regressoes', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(dados)
+                });
+                
+                const result = await response.json();
+                
+                if (result.sucesso) {
+                    const r = result.resultado;
+                    let html = '';
+                    
+                    // Regressão Linear
+                    if (r.linear) {
+                        html += `
+                            <div class="regressao-card">
+                                <h4>📊 Regressão Linear</h4>
+                                <div class="resultado-item">
+                                    <strong>Equação:</strong> ${r.linear.equacao}
+                                </div>
+                                <div class="resultado-item">
+                                    <strong>Erro Quadrático:</strong> ${r.linear.erro.toFixed(6)}
+                                </div>
+                                <details>
+                                    <summary style="cursor: pointer; font-weight: bold; margin: 10px 0;">
+                                        Ver detalhes dos cálculos
+                                    </summary>
+                                    <pre>${r.linear.detalhes}</pre>
+                                </details>
+                            </div>
+                        `;
+                    }
+                    
+                    // Regressão Parabólica
+                    if (r.parabolica) {
+                        html += `
+                            <div class="regressao-card">
+                                <h4>📉 Regressão Parabólica</h4>
+                                <div class="resultado-item">
+                                    <strong>Equação:</strong> ${r.parabolica.equacao}
+                                </div>
+                                <div class="resultado-item">
+                                    <strong>Erro Quadrático:</strong> ${r.parabolica.erro.toFixed(6)}
+                                </div>
+                                <details>
+                                    <summary style="cursor: pointer; font-weight: bold; margin: 10px 0;">
+                                        Ver detalhes dos cálculos
+                                    </summary>
+                                    <pre>${r.parabolica.detalhes}</pre>
+                                </details>
+                            </div>
+                        `;
+                    }
+                    
+                    // Regressão Exponencial
+                    if (r.exponencial) {
+                        html += `
+                            <div class="regressao-card">
+                                <h4>📈 Regressão Exponencial</h4>
+                                <div class="resultado-item">
+                                    <strong>Equação:</strong> ${r.exponencial.equacao}
+                                </div>
+                                <div class="resultado-item">
+                                    <strong>Erro Quadrático:</strong> ${r.exponencial.erro.toFixed(6)}
+                                </div>
+                                <details>
+                                    <summary style="cursor: pointer; font-weight: bold; margin: 10px 0;">
+                                        Ver detalhes dos cálculos
+                                    </summary>
+                                    <pre>${r.exponencial.detalhes}</pre>
+                                </details>
+                            </div>
+                        `;
+                    }
+                    
+                    // Comparação de erros
+                    if (r.linear && r.parabolica && r.exponencial) {
+                        html += `
+                            <div class="resultado-item" style="background: #e3f2fd;">
+                                <strong>Comparação de Erros Quadráticos:</strong><br>
+                                Linear: ${r.linear.erro.toFixed(6)}<br>
+                                Parabólica: ${r.parabolica.erro.toFixed(6)}<br>
+                                Exponencial: ${r.exponencial.erro.toFixed(6)}
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('conteudoResultado').innerHTML = html;
+                    document.getElementById('resultado').style.display = 'block';
+                } else {
+                    document.getElementById('conteudoResultado').innerHTML = `
+                        <div class="error">Erro: ${result.erro}</div>
+                    `;
+                    document.getElementById('resultado').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('conteudoResultado').innerHTML = `
+                    <div class="error">Erro de comunicação: ${error.message}</div>
+                `;
+                document.getElementById('resultado').style.display = 'block';
+            }
+            
+            button.disabled = false;
+            button.textContent = 'Calcular Regressões';
+        });
+    </script>
+</body>
+</html>

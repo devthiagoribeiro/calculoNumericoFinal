@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problema 1: Minas - Cálculo Numérico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .back-link:hover {
+            opacity: 1;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .description {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+        }
+        
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        input[type="number"] {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        #resultado {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        #resultado h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .resultado-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .resultado-item strong {
+            color: #333;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-link">← Voltar ao Menu</a>
+            <h1>📊 Problema 1: Sistema das Três Minas</h1>
+            <p>Resolução usando Eliminação de Gauss com Pivoteamento Parcial</p>
+        </header>
+        
+        <div class="content">
+            <div class="description">
+                <h3>Descrição do Problema</h3>
+                <p>Três minas produzem areia, cascalho fino e cascalho grosso em diferentes proporções. 
+                   Determine quanto deve ser extraído de cada mina para atender às demandas específicas 
+                   de cada material.</p>
+                <p style="margin-top: 10px;"><strong>Método utilizado:</strong> Eliminação de Gauss com pivoteamento parcial (implementado manualmente).</p>
+            </div>
+            
+            <form id="formMinas">
+                <div class="form-section">
+                    <h3>Demandas (m³)</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Areia:</label>
+                            <input type="number" id="d1" value="4800" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cascalho Fino:</label>
+                            <input type="number" id="d2" value="5800" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cascalho Grosso:</label>
+                            <input type="number" id="d3" value="5700" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Composição Mina 1 (%)</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Areia:</label>
+                            <input type="number" id="mina1_areia" value="52" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cascalho Fino:</label>
+                            <input type="number" id="mina1_fino" value="30" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cascalho Grosso:</label>
+                            <input type="number" id="mina1_grosso" value="18" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Composição Mina 2 (%)</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Areia:</label>
+                            <input type="number" id="mina2_areia" value="20" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cascalho Fino:</label>
+                            <input type="number" id="mina2_fino" value="50" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cascalho Grosso:</label>
+                            <input type="number" id="mina2_grosso" value="30" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Composição Mina 3 (%)</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Areia:</label>
+                            <input type="number" id="mina3_areia" value="25" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cascalho Fino:</label>
+                            <input type="number" id="mina3_fino" value="20" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cascalho Grosso:</label>
+                            <input type="number" id="mina3_grosso" value="55" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit">Calcular</button>
+            </form>
+            
+            <div id="resultado">
+                <h3>Resultados</h3>
+                <div id="conteudoResultado"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('formMinas').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const button = e.target.querySelector('button');
+            button.disabled = true;
+            button.textContent = 'Calculando...';
+            
+            const dados = {
+                d1: parseFloat(document.getElementById('d1').value),
+                d2: parseFloat(document.getElementById('d2').value),
+                d3: parseFloat(document.getElementById('d3').value),
+                mina1_areia: parseFloat(document.getElementById('mina1_areia').value),
+                mina1_fino: parseFloat(document.getElementById('mina1_fino').value),
+                mina1_grosso: parseFloat(document.getElementById('mina1_grosso').value),
+                mina2_areia: parseFloat(document.getElementById('mina2_areia').value),
+                mina2_fino: parseFloat(document.getElementById('mina2_fino').value),
+                mina2_grosso: parseFloat(document.getElementById('mina2_grosso').value),
+                mina3_areia: parseFloat(document.getElementById('mina3_areia').value),
+                mina3_fino: parseFloat(document.getElementById('mina3_fino').value),
+                mina3_grosso: parseFloat(document.getElementById('mina3_grosso').value)
+            };
+            
+            try {
+                const response = await fetch('/calcular_minas', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(dados)
+                });
+                
+                const result = await response.json();
+                
+                if (result.sucesso) {
+                    const r = result.resultado;
+                    document.getElementById('conteudoResultado').innerHTML = `
+                        <div class="resultado-item">
+                            <strong>Volume Mina 1:</strong> ${r.x1.toFixed(2)} m³
+                        </div>
+                        <div class="resultado-item">
+                            <strong>Volume Mina 2:</strong> ${r.x2.toFixed(2)} m³
+                        </div>
+                        <div class="resultado-item">
+                            <strong>Volume Mina 3:</strong> ${r.x3.toFixed(2)} m³
+                        </div>
+                        <div class="resultado-item">
+                            <strong>Sistema Linear:</strong>
+                            <pre>${r.sistema_original}</pre>
+                        </div>
+                        <div class="resultado-item">
+                            <strong>Passos da Resolução:</strong>
+                            <pre>${r.passos}</pre>
+                        </div>
+                    `;
+                    document.getElementById('resultado').style.display = 'block';
+                } else {
+                    document.getElementById('conteudoResultado').innerHTML = `
+                        <div class="error">Erro: ${result.erro}</div>
+                    `;
+                    document.getElementById('resultado').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('conteudoResultado').innerHTML = `
+                    <div class="error">Erro de comunicação: ${error.message}</div>
+                `;
+                document.getElementById('resultado').style.display = 'block';
+            }
+            
+            button.disabled = false;
+            button.textContent = 'Calcular';
+        });
+    </script>
+</body>
+</html>

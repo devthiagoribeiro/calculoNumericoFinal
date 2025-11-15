@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problema 4: Lei de Moore - Cálculo Numérico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .back-link:hover {
+            opacity: 1;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .description {
+            background: #fce4ec;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #e91e63;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+        }
+        
+        .form-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        #resultado {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        #resultado h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .resultado-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #e91e63;
+        }
+        
+        .resultado-item strong {
+            color: #333;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .info-box {
+            background: #e1f5fe;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        .previsao-card {
+            background: #f1f8e9;
+            border: 2px solid #aed581;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .previsao-card h4 {
+            color: #558b2f;
+            margin-bottom: 10px;
+        }
+        
+        textarea {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: monospace;
+            transition: border 0.3s;
+            resize: vertical;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-link">← Voltar ao Menu</a>
+            <h1>💻 Problema 4: Lei de Moore</h1>
+            <p>Previsão usando Regressão Logarítmica</p>
+        </header>
+        
+        <div class="content">
+            <div class="description">
+                <h3>Descrição do Problema</h3>
+                <p>A Lei de Moore prevê que o número de transistores em circuitos integrados dobra 
+                   aproximadamente a cada dois anos. Use regressão logarítmica para modelar os dados 
+                   históricos e fazer previsões futuras.</p>
+                <p style="margin-top: 10px;"><strong>Método utilizado:</strong> Regressão Linear sobre log₁₀(N) 
+                   (implementado manualmente).</p>
+                <div class="info-box">
+                    <strong>Exemplo de dados históricos:</strong><br>
+                    Anos: 1971, 1972, 1974, 1978, 1982, 1985<br>
+                    Transistores: 2300, 3500, 4500, 29000, 134000, 275000
+                </div>
+            </div>
+            
+            <form id="formMoore">
+                <div class="form-section">
+                    <h3>Dados Históricos</h3>
+                    <div class="form-group">
+                        <label>Anos (separados por vírgula):</label>
+                        <input type="text" id="anos" value="1971, 1972, 1974, 1978, 1982, 1985" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Transistores (separados por vírgula):</label>
+                        <input type="text" id="transistores" value="2300, 3500, 4500, 29000, 134000, 275000" required>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Anos para Previsão</h3>
+                    <div class="form-group">
+                        <label>Anos (separados por vírgula):</label>
+                        <input type="text" id="anos_previsao" value="2010, 2020" required>
+                    </div>
+                </div>
+                
+                <button type="submit">Calcular Previsões</button>
+            </form>
+            
+            <div id="resultado">
+                <h3>Resultados</h3>
+                <div id="conteudoResultado"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('formMoore').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const button = e.target.querySelector('button');
+            button.disabled = true;
+            button.textContent = 'Calculando...';
+            
+            const dados = {
+                anos: document.getElementById('anos').value,
+                transistores: document.getElementById('transistores').value,
+                anos_previsao: document.getElementById('anos_previsao').value
+            };
+            
+            try {
+                const response = await fetch('/calcular_moore', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(dados)
+                });
+                
+                const result = await response.json();
+                
+                if (result.sucesso) {
+                    const r = result.resultado;
+                    let html = '';
+                    
+                    // Modelo de regressão
+                    html += `
+                        <div class="resultado-item">
+                            <strong>Modelo Logarítmico:</strong> ${r.equacao_log}
+                        </div>
+                        <div class="resultado-item">
+                            <strong>Coeficiente a:</strong> ${r.coef_a.toFixed(6)}
+                        </div>
+                        <div class="resultado-item">
+                            <strong>Coeficiente b (taxa de crescimento):</strong> ${r.coef_b.toFixed(6)}
+                        </div>
+                        <div class="resultado-item">
+                            <strong>Erro Quadrático:</strong> ${r.erro.toFixed(6)}
+                        </div>
+                    `;
+                    
+                    // Previsões
+                    html += '<h3 style="margin-top: 20px; color: #667eea;">Previsões</h3>';
+                    
+                    r.previsoes.forEach(prev => {
+                        const numFormatado = prev.N.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+                        const numCientifico = prev.N.toExponential(2);
+                        
+                        html += `
+                            <div class="previsao-card">
+                                <h4>📅 Ano ${prev.ano}</h4>
+                                <div style="margin-top: 10px;">
+                                    <strong>log₁₀(N):</strong> ${prev.log_N.toFixed(6)}<br>
+                                    <strong>Número de transistores:</strong><br>
+                                    &nbsp;&nbsp;• Notação científica: ${numCientifico}<br>
+                                    &nbsp;&nbsp;• Valor aproximado: ${numFormatado} transistores
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    // Detalhes completos
+                    html += `
+                        <details style="margin-top: 20px;">
+                            <summary style="cursor: pointer; font-weight: bold; padding: 10px; background: #e3f2fd; border-radius: 5px;">
+                                Ver todos os detalhes dos cálculos
+                            </summary>
+                            <pre>${r.detalhes}</pre>
+                        </details>
+                    `;
+                    
+                    document.getElementById('conteudoResultado').innerHTML = html;
+                    document.getElementById('resultado').style.display = 'block';
+                } else {
+                    document.getElementById('conteudoResultado').innerHTML = `
+                        <div class="error">Erro: ${result.erro}</div>
+                    `;
+                    document.getElementById('resultado').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('conteudoResultado').innerHTML = `
+                    <div class="error">Erro de comunicação: ${error.message}</div>
+                `;
+                document.getElementById('resultado').style.display = 'block';
+            }
+            
+            button.disabled = false;
+            button.textContent = 'Calcular Previsões';
+        });
+    </script>
+</body>
+</html>
