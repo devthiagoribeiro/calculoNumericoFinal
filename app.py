@@ -10,7 +10,7 @@ import os
 # Adicionar diretório atual ao path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from metodos_diretos import resolver_problema_minas
+from metodos_diretos import resolver_problema_minas, resolver_sistema_generico
 from metodos_iterativos import resolver_ponte_wheatstone
 from minimos_quadrados import resolver_regressoes
 from lei_moore import resolver_lei_moore
@@ -63,8 +63,11 @@ def calcular_minas():
         comp_mina2 = [float(data['mina2_areia']), float(data['mina2_fino']), float(data['mina2_grosso'])]
         comp_mina3 = [float(data['mina3_areia']), float(data['mina3_fino']), float(data['mina3_grosso'])]
         
+        # Extrair método escolhido
+        metodo = data.get('metodo', 'gauss')
+        
         # Resolver
-        resultado = resolver_problema_minas(d1, d2, d3, comp_mina1, comp_mina2, comp_mina3)
+        resultado = resolver_problema_minas(d1, d2, d3, comp_mina1, comp_mina2, comp_mina3, metodo)
         
         return jsonify({
             'sucesso': True,
@@ -179,6 +182,39 @@ def calcular_moore():
         
         return jsonify({
             'sucesso': True,
+            'resultado': resultado
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'sucesso': False,
+            'erro': str(e)
+        }), 400
+
+
+
+
+@app.route('/calcular_sistema', methods=['POST'])
+def calcular_sistema():
+    """Endpoint para calcular sistema linear genérico"""
+    try:
+        data = request.get_json()
+        
+        # Extrair dados da matriz e vetor b
+        A = data['matriz']  # Lista de listas
+        b = data['vetor_b']  # Lista
+        metodo = data.get('metodo', 'gauss')
+        
+        # Validar dimensões
+        n = len(b)
+        if len(A) != n or any(len(linha) != n for linha in A):
+            raise ValueError("A matriz deve ser quadrada NxN onde N é o tamanho do vetor b")
+        
+        # Resolver
+        resultado = resolver_sistema_generico(A, b, metodo)
+        
+        return jsonify({
+            'sucesso': resultado['sucesso'],
             'resultado': resultado
         })
     
