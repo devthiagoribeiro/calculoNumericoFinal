@@ -95,22 +95,60 @@ def calcular_wheatstone():
         R4 = float(data['R4'])
         R5 = float(data['R5'])
         tol = float(data.get('tolerancia', 0.0001))
+        metodo = data.get('metodo', 'gauss_seidel')
         
         # Valores iniciais (se fornecidos)
-        valores_iniciais = None
-        if 'i1_inicial' in data and data['i1_inicial']:
-            valores_iniciais = [
-                float(data['i1_inicial']),
-                float(data['i2_inicial']),
-                float(data['i3_inicial'])
-            ]
+        valores_iniciais = data.get('valores_iniciais', None)
         
         # Resolver
-        resultado = resolver_ponte_wheatstone(E, R1, R2, R3, R4, R5, tol, valores_iniciais)
+        resultado = resolver_ponte_wheatstone(E, R1, R2, R3, R4, R5, tol, valores_iniciais, metodo)
         
         return jsonify({
             'sucesso': True,
             'resultado': resultado
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'sucesso': False,
+            'erro': str(e)
+        }), 400
+
+
+@app.route('/calcular_sistema_iterativo', methods=['POST'])
+def calcular_sistema_iterativo():
+    """Endpoint para calcular sistema linear genérico com métodos iterativos"""
+    try:
+        data = request.get_json()
+        
+        # Extrair dados
+        A = data['matriz']
+        b = data['vetor_b']
+        metodo = data.get('metodo', 'gauss_seidel')
+        tol = float(data.get('tolerancia', 0.0001))
+        valores_iniciais = data.get('valores_iniciais', None)
+        
+        # Importar métodos
+        from metodos_iterativos import jacobi, gauss_seidel
+        from metodos_diretos import formatar_sistema
+        
+        # Resolver usando método escolhido
+        if metodo == 'jacobi':
+            x, num_iter, historico = jacobi(A, b, x0=valores_iniciais, tol=tol)
+            nome_metodo = 'JACOBI'
+        else:  # gauss_seidel
+            x, num_iter, historico = gauss_seidel(A, b, x0=valores_iniciais, tol=tol)
+            nome_metodo = 'GAUSS-SEIDEL'
+        
+        return jsonify({
+            'sucesso': True,
+            'resultado': {
+                'solucao': x,
+                'num_iteracoes': num_iter,
+                'historico': '\n'.join(historico),
+                'sistema_original': formatar_sistema(A, b),
+                'metodo': nome_metodo
+            }
         })
     
     except Exception as e:

@@ -348,13 +348,13 @@
             <div class="form-section">
                 <h3>Forma de Entrada</h3>
                 <div class="tab-buttons">
-                    <button class="tab-button active" onclick="switchTab(event, 'generico')">Entrada Genérica</button>
-                    <button class="tab-button" onclick="switchTab(event, 'minas')">Problema das Minas</button>
+                    <button class="tab-button" onclick="switchTab(event, 'generico')">Entrada Genérica</button>
+                    <button class="tab-button active" onclick="switchTab(event, 'minas')">Problema das Minas</button>
                 </div>
             </div>
             
             <!-- Aba: Entrada Genérica -->
-            <div id="generico" class="tab-content active">
+            <div id="generico" class="tab-content">
                 <div class="form-section">
                     <h3>Seleção do Método</h3>
                     <div class="method-selector">
@@ -401,7 +401,7 @@
                         </div>
                         
                         <div class="button-group">
-                            <button type="submit">Resolver Sistema</button>
+                            <button type="submit">Calcular</button>
                             <button type="reset" class="secondary-button">Limpar</button>
                         </div>
                     </form>
@@ -409,7 +409,7 @@
             </div>
             
             <!-- Aba: Problema das Minas -->
-            <div id="minas" class="tab-content">
+            <div id="minas" class="tab-content active">
                 <div class="form-section">
                     <h3>Seleção do Método</h3>
                     <div class="method-selector">
@@ -701,7 +701,7 @@
             }
             
             button.disabled = false;
-            button.textContent = 'Resolver Sistema';
+            button.textContent = 'Calcular';
         });
         
         document.getElementById('formMinas').addEventListener('submit', async (e) => {

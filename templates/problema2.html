@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Problema 2: Ponte de Wheatstone - Cálculo Numérico</title>
+    <title>Problema 2: Sistemas de Equações Lineares - Métodos Iterativos</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -63,7 +63,7 @@
         }
         
         .form-section {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
         
         .form-section h3 {
@@ -73,23 +73,109 @@
             border-bottom: 2px solid #e0e0e0;
         }
         
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .form-group {
+        .tab-buttons {
             display: flex;
-            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
         
-        label {
+        .tab-button {
+            padding: 10px 20px;
+            border: 2px solid #888888;
+            background: white;
+            color: #555555;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .tab-button.active {
+            background: #888888;
+            color: white;
+        }
+        
+        .tab-button:hover {
+            border-color: #555555;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .method-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .method-radio {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .method-radio:hover {
+            border-color: #888888;
+            background: #f9f9f9;
+        }
+        
+        .method-radio input[type="radio"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        .method-radio label {
+            cursor: pointer;
+            margin: 0;
+        }
+        
+        .matrix-input {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .matrix-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .matrix-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .size-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .size-selector label {
             font-weight: 600;
             color: #555;
-            margin-bottom: 5px;
-            font-size: 0.9em;
+        }
+        
+        .size-selector select, .size-selector input[type="number"] {
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
         }
         
         input[type="number"] {
@@ -98,6 +184,7 @@
             border-radius: 5px;
             font-size: 1em;
             transition: border 0.3s;
+            width: 100%;
         }
         
         input[type="number"]:focus {
@@ -105,16 +192,35 @@
             border-color: #888888;
         }
         
+        .matrix-label {
+            color: #555;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .matrix-separator {
+            color: #888;
+            text-align: center;
+            padding: 0 5px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
         button {
             background: linear-gradient(135deg, #5a5a5a 0%, #404040 100%);
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
+            padding: 12px 24px;
+            font-size: 1em;
             border-radius: 5px;
             cursor: pointer;
             transition: transform 0.2s;
-            margin-top: 10px;
+            font-weight: 600;
         }
         
         button:hover {
@@ -124,6 +230,15 @@
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+        }
+        
+        .secondary-button {
+            background: #d0d0d0;
+            color: #333;
+        }
+        
+        .secondary-button:hover {
+            background: #c0c0c0;
         }
         
         #resultado {
@@ -147,6 +262,10 @@
             border-left: 3px solid #888888;
         }
         
+        .resultado-item strong {
+            color: #333;
+        }
+        
         .solucao-item {
             background: #e8f5e9;
             padding: 15px;
@@ -164,43 +283,9 @@
             margin-bottom: 10px;
         }
         
-        .resultado-item strong {
-            color: #333;
-        }
-        
-        pre {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            font-size: 0.9em;
-            line-height: 1.5;
-            margin-top: 10px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
-        .error {
-            background: #fee;
-            color: #c00;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-        
-        .info-box {
-            background: #efefef;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9em;
-            border: 1px solid #d0d0d0;
-        }
-        
         .correntes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
             margin-top: 10px;
         }
@@ -212,89 +297,249 @@
             text-align: center;
             border: 1px solid #d0e0f0;
         }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .sample-data {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .sample-button {
+            padding: 10px 20px;
+            font-size: 0.95em;
+            white-space: nowrap;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-box {
+            background: #efefef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            border: 1px solid #d0d0d0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <a href="/" class="back-link">← Voltar ao Menu</a>
-            <h1>⚡ Problema 2: Ponte de Wheatstone</h1>
-            <p>Resolução usando Método de Gauss-Seidel (Leis de Kirchhoff)</p>
+            <h1>⚡ Problema 2: Sistemas de Equações Lineares</h1>
+            <p>Resolução de Ax = b usando Métodos Iterativos</p>
         </header>
         
         <div class="content">
             <div class="description">
-                <h3>Descrição do Problema</h3>
-                <p>Calcular as correntes elétricas em um circuito de Ponte de Wheatstone usando 
-                   as Leis de Kirchhoff (Lei dos Nós e Lei das Malhas).</p>
-                <p style="margin-top: 10px;"><strong>Método utilizado:</strong> Gauss-Seidel (método iterativo implementado manualmente).</p>
-                <div class="info-box">
-                    <strong>Valores padrão do problema:</strong> E = 30V, R1 = 20Ω, R2 = R3 = R4 = R5 = 120Ω
+                <h3>Descrição</h3>
+                <p>Escolha entre diferentes métodos iterativos para resolver um sistema linear Ax = b:</p>
+                <ul style="margin-top: 10px; margin-left: 20px;">
+                    <li><strong>Método de Jacobi:</strong> Método iterativo que usa apenas valores da iteração anterior</li>
+                    <li><strong>Método de Gauss-Seidel:</strong> Método iterativo que usa valores já atualizados na mesma iteração</li>
+                </ul>
+            </div>
+            
+            <!-- Abas para entrada -->
+            <div class="form-section">
+                <h3>Forma de Entrada</h3>
+                <div class="tab-buttons">
+                    <button class="tab-button" onclick="switchTab(event, 'generico')">Entrada Genérica</button>
+                    <button class="tab-button active" onclick="switchTab(event, 'wheatstone')">Ponte de Wheatstone</button>
                 </div>
             </div>
             
-            <form id="formWheatstone">
+            <!-- Aba: Entrada Genérica -->
+            <div id="generico" class="tab-content">
                 <div class="form-section">
-                    <h3>Parâmetros do Circuito</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Tensão E (V):</label>
-                            <input type="number" id="E" value="30" step="0.1" required>
+                    <h3>Seleção do Método</h3>
+                    <div class="method-selector">
+                        <div class="method-radio">
+                            <input type="radio" id="metodo_jacobi" name="metodo" value="jacobi" checked>
+                            <label for="metodo_jacobi"><strong>Jacobi</strong><br><small>Iteração Simples</small></label>
                         </div>
-                        <div class="form-group">
-                            <label>Resistor R1 (Ω):</label>
-                            <input type="number" id="R1" value="20" step="0.1" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Resistor R2 (Ω):</label>
-                            <input type="number" id="R2" value="120" step="0.1" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Resistor R3 (Ω):</label>
-                            <input type="number" id="R3" value="120" step="0.1" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Resistor R4 (Ω):</label>
-                            <input type="number" id="R4" value="120" step="0.1" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Resistor R5 (Ω):</label>
-                            <input type="number" id="R5" value="120" step="0.1" required>
+                        <div class="method-radio">
+                            <input type="radio" id="metodo_gauss_seidel" name="metodo" value="gauss_seidel">
+                            <label for="metodo_gauss_seidel"><strong>Gauss-Seidel</strong><br><small>Convergência Rápida</small></label>
                         </div>
                     </div>
                 </div>
                 
                 <div class="form-section">
-                    <h3>Parâmetros do Método Iterativo</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Tolerância:</label>
-                            <input type="number" id="tolerancia" value="0.0001" step="0.00001" required>
+                    <h3>Definir Tamanho do Sistema</h3>
+                    <div class="matrix-controls">
+                        <div class="size-selector">
+                            <label for="matrixSize">Dimensão (NxN):</label>
+                            <select id="matrixSize" onchange="updateMatrixSize()">
+                                <option value="2">2x2</option>
+                                <option value="3" selected>3x3</option>
+                                <option value="4">4x4</option>
+                                <option value="5">5x5</option>
+                            </select>
+                        </div>
+                        <div class="size-selector">
+                            <label for="tolerancia">Tolerância:</label>
+                            <input type="number" id="tolerancia" value="0.0001" step="0.00001" style="width: 120px;">
                         </div>
                     </div>
                 </div>
                 
                 <div class="form-section">
-                    <h3>Valores Iniciais (opcional - deixe vazio para usar zeros)</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>i1 inicial (A):</label>
-                            <input type="number" id="i1_inicial" step="0.001" placeholder="0">
+                    <h3>Matriz de Coeficientes (A) e Vetor (b)</h3>
+                    <div class="matrix-label">Sistema: Ax = b</div>
+                    <form id="formGenerico">
+                        <div id="matrixContainer" class="matrix-input"></div>
+                        
+                        <div class="form-section">
+                            <h3>Valores Iniciais (opcional - deixe vazio para usar zeros)</h3>
+                            <div id="initialValuesContainer" class="matrix-row"></div>
                         </div>
-                        <div class="form-group">
-                            <label>i2 inicial (A):</label>
-                            <input type="number" id="i2_inicial" step="0.001" placeholder="0">
+                        
+                        <div class="sample-data">
+                            <button type="button" class="sample-button secondary-button" onclick="loadSampleData1()">Exemplo 1 (Diag. Dom.)</button>
+                            <button type="button" class="sample-button secondary-button" onclick="loadSampleData2()">Exemplo 2</button>
+                            <button type="button" class="sample-button secondary-button" onclick="loadSampleData3()">Exemplo 3</button>
                         </div>
-                        <div class="form-group">
-                            <label>i3 inicial (A):</label>
-                            <input type="number" id="i3_inicial" step="0.001" placeholder="0">
+                        
+                        <div class="button-group">
+                            <button type="submit">Calcular</button>
+                            <button type="reset" class="secondary-button">Limpar</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
-                
-                <button type="submit">Calcular</button>
-            </form>
+            </div>
             
+            <!-- Aba: Ponte de Wheatstone -->
+            <div id="wheatstone" class="tab-content active">
+                <div class="form-section">
+                    <h3>Seleção do Método</h3>
+                    <div class="method-selector">
+                        <div class="method-radio">
+                            <input type="radio" id="metodo_jacobi_wheat" name="metodo_wheat" value="jacobi">
+                            <label for="metodo_jacobi_wheat"><strong>Jacobi</strong><br><small>Iteração Simples</small></label>
+                        </div>
+                        <div class="method-radio">
+                            <input type="radio" id="metodo_gauss_seidel_wheat" name="metodo_wheat" value="gauss_seidel" checked>
+                            <label for="metodo_gauss_seidel_wheat"><strong>Gauss-Seidel</strong><br><small>Convergência Rápida</small></label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="description">
+                    <div class="info-box">
+                        <strong>Problema: Ponte de Wheatstone</strong><br>
+                        Calcular as correntes elétricas em um circuito usando as Leis de Kirchhoff.<br>
+                        <strong>Valores padrão:</strong> E = 30V, R1 = 20Ω, R2 = R3 = R4 = R5 = 120Ω
+                    </div>
+                </div>
+                
+                <form id="formWheatstone">
+                    <div class="form-section">
+                        <h3>Parâmetros do Circuito</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Tensão E (V):</label>
+                                <input type="number" id="E" value="30" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Resistor R1 (Ω):</label>
+                                <input type="number" id="R1" value="20" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Resistor R2 (Ω):</label>
+                                <input type="number" id="R2" value="120" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Resistor R3 (Ω):</label>
+                                <input type="number" id="R3" value="120" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Resistor R4 (Ω):</label>
+                                <input type="number" id="R4" value="120" step="0.1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Resistor R5 (Ω):</label>
+                                <input type="number" id="R5" value="120" step="0.1" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Parâmetros do Método Iterativo</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Tolerância:</label>
+                                <input type="number" id="tolerancia_wheat" value="0.0001" step="0.00001" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Valores Iniciais (opcional - deixe vazio para usar zeros)</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>i1 inicial (A):</label>
+                                <input type="number" id="i1_inicial" step="0.001" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label>i2 inicial (A):</label>
+                                <input type="number" id="i2_inicial" step="0.001" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label>i3 inicial (A):</label>
+                                <input type="number" id="i3_inicial" step="0.001" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit">Calcular</button>
+                        <button type="reset" class="secondary-button">Limpar</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Resultados -->
             <div id="resultado">
                 <h3>Resultados</h3>
                 <div id="conteudoResultado"></div>
@@ -303,14 +548,230 @@
     </div>
     
     <script>
+        // ===== TAB SWITCHING =====
+        function switchTab(event, tabName) {
+            event.preventDefault();
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // ===== MATRIX INPUT GENERATION =====
+        function updateMatrixSize() {
+            const size = parseInt(document.getElementById('matrixSize').value);
+            const container = document.getElementById('matrixContainer');
+            const initialContainer = document.getElementById('initialValuesContainer');
+            
+            container.innerHTML = '';
+            initialContainer.innerHTML = '';
+            
+            // Matrix rows
+            for (let i = 0; i < size; i++) {
+                const row = document.createElement('div');
+                row.className = 'matrix-row';
+                
+                for (let j = 0; j < size; j++) {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.id = `a_${i}_${j}`;
+                    input.value = i === j ? 4 : 1;
+                    input.step = '0.1';
+                    row.appendChild(input);
+                }
+                
+                const sep = document.createElement('div');
+                sep.className = 'matrix-separator';
+                sep.innerHTML = '|';
+                row.appendChild(sep);
+                
+                const inputB = document.createElement('input');
+                inputB.type = 'number';
+                inputB.id = `b_${i}`;
+                inputB.value = 1;
+                inputB.step = '0.1';
+                row.appendChild(inputB);
+                
+                container.appendChild(row);
+            }
+            
+            // Initial values inputs
+            for (let i = 0; i < size; i++) {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label>x${i+1} inicial:</label>
+                    <input type="number" id="x${i}_inicial" step="0.001" placeholder="0">
+                `;
+                initialContainer.appendChild(div);
+            }
+        }
+        
+        // ===== SAMPLE DATA =====
+        function loadSampleData1() {
+            document.getElementById('matrixSize').value = '3';
+            updateMatrixSize();
+            
+            // Sistema diagonal dominante
+            document.getElementById('a_0_0').value = 10;
+            document.getElementById('a_0_1').value = -1;
+            document.getElementById('a_0_2').value = 2;
+            document.getElementById('b_0').value = 6;
+            
+            document.getElementById('a_1_0').value = -1;
+            document.getElementById('a_1_1').value = 11;
+            document.getElementById('a_1_2').value = -1;
+            document.getElementById('b_1').value = 25;
+            
+            document.getElementById('a_2_0').value = 2;
+            document.getElementById('a_2_1').value = -1;
+            document.getElementById('a_2_2').value = 10;
+            document.getElementById('b_2').value = -11;
+        }
+        
+        function loadSampleData2() {
+            document.getElementById('matrixSize').value = '3';
+            updateMatrixSize();
+            
+            document.getElementById('a_0_0').value = 4;
+            document.getElementById('a_0_1').value = 1;
+            document.getElementById('a_0_2').value = 1;
+            document.getElementById('b_0').value = 2;
+            
+            document.getElementById('a_1_0').value = 1;
+            document.getElementById('a_1_1').value = 5;
+            document.getElementById('a_1_2').value = 2;
+            document.getElementById('b_1').value = -6;
+            
+            document.getElementById('a_2_0').value = 1;
+            document.getElementById('a_2_1').value = 2;
+            document.getElementById('a_2_2').value = 4;
+            document.getElementById('b_2').value = -4;
+        }
+        
+        function loadSampleData3() {
+            document.getElementById('matrixSize').value = '2';
+            updateMatrixSize();
+            
+            document.getElementById('a_0_0').value = 5;
+            document.getElementById('a_0_1').value = 1;
+            document.getElementById('b_0').value = 6;
+            
+            document.getElementById('a_1_0').value = 1;
+            document.getElementById('a_1_1').value = 3;
+            document.getElementById('b_1').value = 4;
+        }
+        
+        // ===== FORM SUBMISSION - GENERICO =====
+        document.getElementById('formGenerico').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const button = e.target.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.textContent = 'Resolvendo...';
+            
+            const size = parseInt(document.getElementById('matrixSize').value);
+            const metodo = document.querySelector('input[name="metodo"]:checked').value;
+            const tol = parseFloat(document.getElementById('tolerancia').value);
+            
+            const A = [];
+            const b = [];
+            const valores_iniciais = [];
+            
+            for (let i = 0; i < size; i++) {
+                const linha = [];
+                for (let j = 0; j < size; j++) {
+                    linha.push(parseFloat(document.getElementById(`a_${i}_${j}`).value));
+                }
+                A.push(linha);
+                b.push(parseFloat(document.getElementById(`b_${i}`).value));
+                
+                const xInicial = document.getElementById(`x${i}_inicial`).value;
+                if (xInicial !== '') {
+                    valores_iniciais.push(parseFloat(xInicial));
+                }
+            }
+            
+            const dados = {
+                matriz: A,
+                vetor_b: b,
+                metodo: metodo,
+                tolerancia: tol,
+                valores_iniciais: valores_iniciais.length === size ? valores_iniciais : null
+            };
+            
+            try {
+                const response = await fetch('/calcular_sistema_iterativo', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(dados)
+                });
+                
+                const result = await response.json();
+                
+                if (result.sucesso) {
+                    const r = result.resultado;
+                    let html = `
+                        <div class="metodo-info">
+                            <strong>Método utilizado:</strong> ${r.metodo}
+                        </div>
+                        <div class="metodo-info">
+                            <strong>Número de iterações:</strong> ${r.num_iteracoes}
+                        </div>
+                        <div class="resultado-item">
+                            <strong>Sistema Linear (Ax = b):</strong>
+                            <pre>${r.sistema_original}</pre>
+                        </div>
+                        <div class="solucao-item">
+                            <strong>Solução:</strong><br>
+                    `;
+                    
+                    r.solucao.forEach((valor, idx) => {
+                        html += `x<sub>${idx + 1}</sub> = ${valor.toFixed(8)}<br>`;
+                    });
+                    
+                    html += `
+                        </div>
+                        <details>
+                            <summary style="cursor: pointer; font-weight: bold; padding: 10px; background: #e3f2fd; border-radius: 5px; margin-top: 15px;">
+                                Ver histórico das iterações
+                            </summary>
+                            <pre>${r.historico}</pre>
+                        </details>
+                    `;
+                    
+                    document.getElementById('conteudoResultado').innerHTML = html;
+                    document.getElementById('resultado').style.display = 'block';
+                } else {
+                    document.getElementById('conteudoResultado').innerHTML = `
+                        <div class="error">Erro: ${result.erro}</div>
+                    `;
+                    document.getElementById('resultado').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('conteudoResultado').innerHTML = `
+                    <div class="error">Erro de comunicação: ${error.message}</div>
+                `;
+                document.getElementById('resultado').style.display = 'block';
+            }
+            
+            button.disabled = false;
+            button.textContent = 'Calcular';
+        });
+        
+        // ===== FORM SUBMISSION - WHEATSTONE =====
         document.getElementById('formWheatstone').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const button = e.target.querySelector('button');
+            const button = e.target.querySelector('button[type="submit"]');
             button.disabled = true;
             button.textContent = 'Calculando...';
             
-            // Coletar valores iniciais
+            const metodo = document.querySelector('input[name="metodo_wheat"]:checked').value;
+            
             const i1_inicial = document.getElementById('i1_inicial').value;
             const i2_inicial = document.getElementById('i2_inicial').value;
             const i3_inicial = document.getElementById('i3_inicial').value;
@@ -327,8 +788,9 @@
                 R3: parseFloat(document.getElementById('R3').value),
                 R4: parseFloat(document.getElementById('R4').value),
                 R5: parseFloat(document.getElementById('R5').value),
-                tolerancia: parseFloat(document.getElementById('tolerancia').value),
-                valores_iniciais: valores_iniciais.length === 3 ? valores_iniciais : null
+                tolerancia: parseFloat(document.getElementById('tolerancia_wheat').value),
+                valores_iniciais: valores_iniciais.length === 3 ? valores_iniciais : null,
+                metodo: metodo
             };
             
             try {
@@ -344,9 +806,11 @@
                     const r = result.resultado;
                     document.getElementById('conteudoResultado').innerHTML = `
                         <div class="metodo-info">
-                            <strong>Método utilizado:</strong> GAUSS-SEIDEL
+                            <strong>Método utilizado:</strong> ${r.metodo}
                         </div>
-                        
+                        <div class="metodo-info">
+                            <strong>Número de iterações:</strong> ${r.num_iteracoes}
+                        </div>
                         
                         <div class="solucao-item">
                             <strong>Correntes das Malhas:</strong><br><br>
@@ -385,10 +849,6 @@
                         </div>
                         
                         <div class="resultado-item">
-                            <strong>Número de iterações:</strong> ${r.num_iteracoes}
-                        </div>
-                        
-                        <div class="resultado-item">
                             <strong>Sistema Linear (Leis de Kirchhoff):</strong>
                             <pre>${r.sistema}</pre>
                         </div>
@@ -416,6 +876,11 @@
             
             button.disabled = false;
             button.textContent = 'Calcular';
+        });
+        
+        // Inicializar matriz na carga
+        window.addEventListener('load', () => {
+            updateMatrixSize();
         });
     </script>
 </body>

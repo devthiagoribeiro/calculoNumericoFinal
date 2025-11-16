@@ -1,7 +1,77 @@
 """
 Módulo: Métodos Iterativos para Sistemas Lineares
-Implementa o método de Gauss-Seidel para resolver sistemas Ax = b
+Implementa os métodos de Jacobi e Gauss-Seidel para resolver sistemas Ax = b
 """
+
+def jacobi(A, b, x0=None, tol=0.0001, max_iter=1000):
+    """
+    Resolve sistema linear Ax = b usando o método de Jacobi.
+    
+    Parâmetros:
+        A: matriz de coeficientes (lista de listas)
+        b: vetor de termos independentes (lista)
+        x0: estimativa inicial (lista) - se None, usa vetor zero
+        tol: tolerância para convergência
+        max_iter: número máximo de iterações
+    
+    Retorna:
+        x: vetor solução (lista)
+        num_iter: número de iterações realizadas
+        historico: lista de iterações com valores de x
+    """
+    n = len(b)
+    
+    # Inicializar x0 se não fornecido
+    if x0 is None:
+        x = [0.0] * n
+    else:
+        x = x0[:]
+    
+    historico = []
+    historico.append("=== MÉTODO DE JACOBI ===")
+    historico.append(f"Tolerância: {tol}")
+    historico.append(f"Estimativa inicial: {[f'{val:.6f}' for val in x]}\n")
+    
+    for k in range(max_iter):
+        x_old = x[:]
+        
+        historico.append(f"--- Iteração {k+1} ---")
+        
+        # Calcular novos valores usando APENAS valores da iteração anterior
+        for i in range(n):
+            soma = 0.0
+            
+            # Somatório completo excluindo o elemento diagonal
+            for j in range(n):
+                if j != i:
+                    soma += A[i][j] * x_old[j]
+            
+            x[i] = (b[i] - soma) / A[i][i]
+            historico.append(f"  x[{i+1}] = {x[i]:.8f}")
+        
+        # Calcular erro relativo máximo
+        erro = 0.0
+        for i in range(n):
+            if x[i] != 0:
+                erro_rel = abs((x[i] - x_old[i]) / x[i])
+                if erro_rel > erro:
+                    erro = erro_rel
+        
+        historico.append(f"  Erro relativo máximo: {erro:.8f}\n")
+        
+        # Verificar convergência
+        if erro < tol:
+            historico.append(f"=== CONVERGÊNCIA ATINGIDA ===")
+            historico.append(f"Número de iterações: {k+1}")
+            historico.append(f"\nSolução final:")
+            for i in range(n):
+                historico.append(f"  x[{i+1}] = {x[i]:.8f}")
+            
+            return x, k + 1, historico
+    
+    historico.append(f"\nAVISO: Número máximo de iterações ({max_iter}) atingido!")
+    return x, max_iter, historico
+
 
 def gauss_seidel(A, b, x0=None, tol=0.0001, max_iter=1000):
     """
@@ -128,7 +198,7 @@ def formatar_sistema_matricial(A, b):
     return "\n".join(linhas)
 
 
-def resolver_ponte_wheatstone(E, R1, R2, R3, R4, R5, tol=0.0001, valores_iniciais=None):
+def resolver_ponte_wheatstone(E, R1, R2, R3, R4, R5, tol=0.0001, valores_iniciais=None, metodo='gauss_seidel'):
     """
     Resolve o problema da Ponte de Wheatstone usando as Leis de Kirchhoff.
     
@@ -152,7 +222,13 @@ def resolver_ponte_wheatstone(E, R1, R2, R3, R4, R5, tol=0.0001, valores_iniciai
     if valores_iniciais is None:
         valores_iniciais = [0.0, 0.0, 0.0]
     
-    x, num_iter, historico = gauss_seidel(A, b, x0=valores_iniciais, tol=tol)
+    # Escolher método
+    if metodo == 'jacobi':
+        x, num_iter, historico = jacobi(A, b, x0=valores_iniciais, tol=tol)
+        nome_metodo = 'JACOBI'
+    else:
+        x, num_iter, historico = gauss_seidel(A, b, x0=valores_iniciais, tol=tol)
+        nome_metodo = 'GAUSS-SEIDEL'
     
     # Calcular correntes nos ramos
     i1, i2, i3 = x
@@ -186,9 +262,11 @@ Forma Matricial:
         'num_iteracoes': num_iter,
         'historico': '\n'.join(historico),
         'sistema': sistema_formatado,
+        'metodo': nome_metodo,
         'parametros': f"""Parâmetros do Circuito:
 Tensão: E = {E} V
 Resistências: R1 = {R1} Ω, R2 = {R2} Ω, R3 = {R3} Ω, R4 = {R4} Ω, R5 = {R5} Ω
 Tolerância: {tol}
+Método: {nome_metodo}
 """
     }
