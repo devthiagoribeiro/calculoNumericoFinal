@@ -147,6 +147,23 @@
             border-left: 3px solid #888888;
         }
         
+        .solucao-item {
+            background: #e8f5e9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #555555;
+        }
+        
+        .metodo-info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
         .resultado-item strong {
             color: #333;
         }
@@ -179,6 +196,21 @@
             margin-top: 10px;
             font-size: 0.9em;
             border: 1px solid #d0d0d0;
+        }
+        
+        .correntes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .corrente-item {
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #d0e0f0;
         }
     </style>
 </head>
@@ -278,6 +310,16 @@
             button.disabled = true;
             button.textContent = 'Calculando...';
             
+            // Coletar valores iniciais
+            const i1_inicial = document.getElementById('i1_inicial').value;
+            const i2_inicial = document.getElementById('i2_inicial').value;
+            const i3_inicial = document.getElementById('i3_inicial').value;
+            
+            const valores_iniciais = [];
+            if (i1_inicial !== '') valores_iniciais.push(parseFloat(i1_inicial));
+            if (i2_inicial !== '') valores_iniciais.push(parseFloat(i2_inicial));
+            if (i3_inicial !== '') valores_iniciais.push(parseFloat(i3_inicial));
+            
             const dados = {
                 E: parseFloat(document.getElementById('E').value),
                 R1: parseFloat(document.getElementById('R1').value),
@@ -286,9 +328,7 @@
                 R4: parseFloat(document.getElementById('R4').value),
                 R5: parseFloat(document.getElementById('R5').value),
                 tolerancia: parseFloat(document.getElementById('tolerancia').value),
-                i1_inicial: document.getElementById('i1_inicial').value,
-                i2_inicial: document.getElementById('i2_inicial').value,
-                i3_inicial: document.getElementById('i3_inicial').value
+                valores_iniciais: valores_iniciais.length === 3 ? valores_iniciais : null
             };
             
             try {
@@ -303,26 +343,66 @@
                 if (result.sucesso) {
                     const r = result.resultado;
                     document.getElementById('conteudoResultado').innerHTML = `
-                        <div class="resultado-item">
-                            <strong>Corrente i1:</strong> ${r.i1.toFixed(8)} A
+                        <div class="metodo-info">
+                            <strong>Método utilizado:</strong> GAUSS-SEIDEL
                         </div>
+                        
                         <div class="resultado-item">
-                            <strong>Corrente i2:</strong> ${r.i2.toFixed(8)} A
+                            <strong>Parâmetros do Circuito:</strong>
+                            <pre>${r.parametros}</pre>
                         </div>
-                        <div class="resultado-item">
-                            <strong>Corrente i3:</strong> ${r.i3.toFixed(8)} A
+                        
+                        <div class="solucao-item">
+                            <strong>Correntes das Malhas:</strong><br><br>
+                            <div class="correntes-grid">
+                                <div class="corrente-item">
+                                    <strong>i₁</strong><br>${r.i1.toFixed(6)} A
+                                </div>
+                                <div class="corrente-item">
+                                    <strong>i₂</strong><br>${r.i2.toFixed(6)} A
+                                </div>
+                                <div class="corrente-item">
+                                    <strong>i₃</strong><br>${r.i3.toFixed(6)} A
+                                </div>
+                            </div>
                         </div>
+                        
+                        <div class="solucao-item">
+                            <strong>Correntes nos Resistores:</strong><br><br>
+                            <div class="correntes-grid">
+                                <div class="corrente-item">
+                                    <strong>R₁</strong><br>${r.corrente_R1.toFixed(6)} A
+                                </div>
+                                <div class="corrente-item">
+                                    <strong>R₂</strong><br>${r.corrente_R2.toFixed(6)} A
+                                </div>
+                                <div class="corrente-item">
+                                    <strong>R₃</strong><br>${r.corrente_R3.toFixed(6)} A
+                                </div>
+                                <div class="corrente-item">
+                                    <strong>R₄</strong><br>${r.corrente_R4.toFixed(6)} A
+                                </div>
+                                <div class="corrente-item">
+                                    <strong>R₅</strong><br>${r.corrente_R5.toFixed(6)} A
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="resultado-item">
                             <strong>Número de iterações:</strong> ${r.num_iteracoes}
                         </div>
+                        
                         <div class="resultado-item">
                             <strong>Sistema Linear (Leis de Kirchhoff):</strong>
                             <pre>${r.sistema}</pre>
                         </div>
-                        <div class="resultado-item">
-                            <strong>Histórico das Iterações:</strong>
+                        
+                        <details>
+                            <summary style="cursor: pointer; font-weight: bold; padding: 10px; background: #e3f2fd; border-radius: 5px; margin-top: 15px;">
+                                Ver Histórico das Iterações
+                            </summary>
                             <pre>${r.historico}</pre>
-                        </div>
+                        </details>
                     `;
                     document.getElementById('resultado').style.display = 'block';
                 } else {

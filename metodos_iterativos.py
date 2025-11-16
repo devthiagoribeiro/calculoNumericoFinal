@@ -28,9 +28,30 @@ def gauss_seidel(A, b, x0=None, tol=0.0001, max_iter=1000):
         x = x0[:]
     
     historico = []
-    historico.append(f"=== MÉTODO DE GAUSS-SEIDEL ===")
+    historico.append("=== MÉTODO DE GAUSS-SEIDEL ===")
     historico.append(f"Tolerância: {tol}")
-    historico.append(f"Estimativa inicial: {[f'{val:.6f}' for val in x]}\n")
+    historico.append(f"Estimativa inicial: {[f'{val:.6f}' for val in x]}")
+    historico.append("")
+    
+    # Adicionar sistema original
+    historico.append("Sistema Linear Original:")
+    for i in range(n):
+        eq = f"Eq {i+1}: "
+        for j in range(n):
+            if j > 0 and A[i][j] >= 0:
+                eq += " + "
+            elif A[i][j] < 0:
+                eq += " - "
+            if j == 0 and A[i][j] < 0:
+                eq += "-"
+            
+            if abs(A[i][j]) != 1 or j == n-1:
+                eq += f"{abs(A[i][j]):.1f}"
+            
+            eq += f"*x{j+1}"
+        eq += f" = {b[i]:.1f}"
+        historico.append(eq)
+    historico.append("")
     
     for k in range(max_iter):
         x_old = x[:]
@@ -59,20 +80,52 @@ def gauss_seidel(A, b, x0=None, tol=0.0001, max_iter=1000):
                 if erro_rel > erro:
                     erro = erro_rel
         
-        historico.append(f"  Erro relativo máximo: {erro:.8f}\n")
+        historico.append(f"  Erro relativo máximo: {erro:.8f}")
         
         # Verificar convergência
         if erro < tol:
-            historico.append(f"=== CONVERGÊNCIA ATINGIDA ===")
+            historico.append("")
+            historico.append("=== CONVERGÊNCIA ATINGIDA ===")
             historico.append(f"Número de iterações: {k+1}")
-            historico.append(f"\nSolução final:")
+            historico.append("")
+            historico.append("Solução final:")
             for i in range(n):
                 historico.append(f"  x[{i+1}] = {x[i]:.8f}")
             
             return x, k + 1, historico
     
-    historico.append(f"\nAVISO: Número máximo de iterações ({max_iter}) atingido!")
+    historico.append("")
+    historico.append(f"AVISO: Número máximo de iterações ({max_iter}) atingido!")
     return x, max_iter, historico
+
+
+def formatar_sistema_matricial(A, b):
+    """Formata sistema linear no formato matricial para exibição"""
+    n = len(b)
+    linhas = []
+    
+    # Matriz A
+    linhas.append("Matriz A:")
+    for i in range(n):
+        linha = "[ "
+        for j in range(n):
+            linha += f"{A[i][j]:8.2f} "
+        linha += "]"
+        linhas.append(linha)
+    
+    # Vetor x
+    linhas.append("")
+    linhas.append("Vetor x:")
+    for i in range(n):
+        linhas.append(f"[ x{i+1} ]")
+    
+    # Vetor b
+    linhas.append("")
+    linhas.append("Vetor b:")
+    for i in range(n):
+        linhas.append(f"[ {b[i]:8.2f} ]")
+    
+    return "\n".join(linhas)
 
 
 def resolver_ponte_wheatstone(E, R1, R2, R3, R4, R5, tol=0.0001, valores_iniciais=None):
@@ -83,60 +136,59 @@ def resolver_ponte_wheatstone(E, R1, R2, R3, R4, R5, tol=0.0001, valores_iniciai
         - E: tensão da fonte (V)
         - R1, R2, R3, R4, R5: resistências (ohms)
     
-    Sistema de equações das correntes (i1, i2, i3):
-    Usando as Leis de Kirchhoff:
-        Malha 1: i1*R1 + i2*R5 = E
-        Malha 2: i2*R2 + (i2-i3)*R5 = 0  =>  i2*(R2+R5) - i3*R5 = 0
-        Malha 3: i3*R3 + i3*R4 + (i3-i2)*R5 = 0  =>  -i2*R5 + i3*(R3+R4+R5) = 0
-    
-    Ajustando para o formato padrão:
-        Nó superior: i1 = i2 + i3
-        Malha esquerda: E = i1*R1 + i2*R2
-        Malha direita: i2*R2 + (i2-i3)*R5 = i3*R3 + i3*R4
-    
-    Sistema matricial (usando 3 correntes principais):
-        i1, i2, i3
+    Sistema de equações baseado nas malhas:
     """
     
-    # Montagem do sistema baseado nas malhas
-    # Malha 1 (externa esquerda): E = i1*R1 + i2*R2
-    # Malha 2 (central): 0 = i2*(R2+R5) - i3*R5 - i1*R2  =>  -i1*R2 + i2*(R2+R5) - i3*R5 = 0
-    # Malha 3 (externa direita): 0 = i3*(R3+R4+R5) - i2*R5
-    # Lei dos nós: i1 = i2 + i3  =>  i1 - i2 - i3 = 0
-    
-    # Sistema reformulado para 3 correntes:
-    # Equação 1 (nó): i1 - i2 - i3 = 0
-    # Equação 2 (malha esquerda): i1*R1 + i2*R2 = E
-    # Equação 3 (malha direita): i2*R5 - i3*(R4+R5) = 0
-    
+    # Montagem do sistema baseado nas 3 malhas principais
     A = [
-        [1, -1, -1],                    # Lei dos nós
-        [R1, R2, 0],                    # Malha esquerda
-        [0, R5, -(R4 + R5)]            # Malha direita com R3
+        [R1 + R2 + R5, -R2, -R5],           # Malha 1
+        [-R2, R2 + R3 + R4, -R4],           # Malha 2  
+        [-R5, -R4, R4 + R5]                 # Malha 3
     ]
     
-    b = [0, E, 0]
+    b = [E, 0, 0]
     
-    # Reordenar para melhor convergência (diagonal dominante se possível)
-    A_reord = [
-        [R1, R2, 0],                    # Malha esquerda
-        [0, R2 + R5, -R5],              # Malha central
-        [0, -R5, R3 + R4 + R5]          # Malha direita
-    ]
+    # Usar zeros se valores iniciais não forem fornecidos
+    if valores_iniciais is None:
+        valores_iniciais = [0.0, 0.0, 0.0]
     
-    b_reord = [E, 0, 0]
+    x, num_iter, historico = gauss_seidel(A, b, x0=valores_iniciais, tol=tol)
     
-    x, num_iter, historico = gauss_seidel(A_reord, b_reord, x0=valores_iniciais, tol=tol)
+    # Calcular correntes nos ramos
+    i1, i2, i3 = x
+    corrente_R1 = i1
+    corrente_R2 = i1 - i2
+    corrente_R3 = i2
+    corrente_R4 = i2 - i3
+    corrente_R5 = i3
+    
+    sistema_formatado = f"""Sistema Linear (Leis de Kirchhoff):
+
+Equação da Malha 1: ({R1} + {R2} + {R5})·i1 - {R2}·i2 - {R5}·i3 = {E}
+Equação da Malha 2: -{R2}·i1 + ({R2} + {R3} + {R4})·i2 - {R4}·i3 = 0  
+Equação da Malha 3: -{R5}·i1 - {R4}·i2 + ({R4} + {R5})·i3 = 0
+
+Forma Matricial:
+[ {R1+R2+R5:5.1f}  {-R2:5.1f}  {-R5:5.1f} ] [ i1 ]   [ {E:5.1f} ]
+[ {-R2:5.1f}  {R2+R3+R4:5.1f}  {-R4:5.1f} ] [ i2 ] = [ {0:5.1f} ]
+[ {-R5:5.1f}  {-R4:5.1f}  {R4+R5:5.1f} ] [ i3 ]   [ {0:5.1f} ]
+"""
     
     return {
         'i1': x[0],
-        'i2': x[1],
+        'i2': x[1], 
         'i3': x[2],
+        'corrente_R1': corrente_R1,
+        'corrente_R2': corrente_R2,
+        'corrente_R3': corrente_R3,
+        'corrente_R4': corrente_R4,
+        'corrente_R5': corrente_R5,
         'num_iteracoes': num_iter,
         'historico': '\n'.join(historico),
-        'sistema': f"""Sistema Linear (Leis de Kirchhoff):
-Equação 1 (Malha esquerda):  {R1}*i1 + {R2}*i2 = {E}
-Equação 2 (Malha central):   {R2 + R5}*i2 - {R5}*i3 = 0
-Equação 3 (Malha direita):   -{R5}*i2 + {R3 + R4 + R5}*i3 = 0
+        'sistema': sistema_formatado,
+        'parametros': f"""Parâmetros do Circuito:
+Tensão: E = {E} V
+Resistências: R1 = {R1} Ω, R2 = {R2} Ω, R3 = {R3} Ω, R4 = {R4} Ω, R5 = {R5} Ω
+Tolerância: {tol}
 """
     }
