@@ -267,14 +267,33 @@ if __name__ == '__main__':
     print("=" * 60)
     print("SISTEMA DE CÁLCULO NUMÉRICO")
     print("=" * 60)
+    print("=" * 60)
+    print("\nSISTEMA DE CÁLCULO NUMÉRICO")
+    print("=" * 60)
     print("\nServidor Flask iniciado!")
-    print("Acesse: http://127.0.0.1:5000")
+    
+    # Detectar ambiente (desenvolvimento ou produção)
+    port = int(os.environ.get('PORT', 5000))
+    is_production = os.environ.get('RENDER', False)
+    
+    if is_production:
+        print("Ambiente: PRODUÇÃO (Render)")
+        print(f"Porta: {port}")
+    else:
+        print("Ambiente: DESENVOLVIMENTO")
+        print(f"Acesse: http://127.0.0.1:{port}")
+    
     print("\nProblemas disponíveis:")
     print("  1. Problema das Minas (Métodos Diretos)")
-    print("  2. Ponte de Wheatstone (Gauss-Seidel)")
+    print("  2. Ponte de Wheatstone (Métodos Iterativos)")
     print("  3. Regressões por Mínimos Quadrados")
     print("  4. Lei de Moore")
     print("\nPressione Ctrl+C para encerrar")
     print("=" * 60)
     
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    # Configuração adaptativa: desenvolvimento vs produção
+    app.run(
+        debug=not is_production,
+        host='0.0.0.0',
+        port=port
+    )
