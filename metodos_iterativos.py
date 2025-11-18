@@ -3,76 +3,6 @@ Módulo: Métodos Iterativos para Sistemas Lineares
 Implementa os métodos de Jacobi e Gauss-Seidel para resolver sistemas Ax = b
 """
 
-def jacobi(A, b, x0=None, tol=0.0001, max_iter=1000):
-    """
-    Resolve sistema linear Ax = b usando o método de Jacobi.
-    
-    Parâmetros:
-        A: matriz de coeficientes (lista de listas)
-        b: vetor de termos independentes (lista)
-        x0: estimativa inicial (lista) - se None, usa vetor zero
-        tol: tolerância para convergência
-        max_iter: número máximo de iterações
-    
-    Retorna:
-        x: vetor solução (lista)
-        num_iter: número de iterações realizadas
-        historico: lista de iterações com valores de x
-    """
-    n = len(b)
-    
-    # Inicializar x0 se não fornecido
-    if x0 is None:
-        x = [0.0] * n
-    else:
-        x = x0[:]
-    
-    historico = []
-    historico.append("=== MÉTODO DE JACOBI ===")
-    historico.append(f"Tolerância: {tol}")
-    historico.append(f"Estimativa inicial: {[f'{val:.6f}' for val in x]}\n")
-    
-    for k in range(max_iter):
-        x_old = x[:]
-        
-        historico.append(f"--- Iteração {k+1} ---")
-        
-        # Calcular novos valores usando APENAS valores da iteração anterior
-        for i in range(n):
-            soma = 0.0
-            
-            # Somatório completo excluindo o elemento diagonal
-            for j in range(n):
-                if j != i:
-                    soma += A[i][j] * x_old[j]
-            
-            x[i] = (b[i] - soma) / A[i][i]
-            historico.append(f"  x[{i+1}] = {x[i]:.8f}")
-        
-        # Calcular erro relativo máximo
-        erro = 0.0
-        for i in range(n):
-            if x[i] != 0:
-                erro_rel = abs((x[i] - x_old[i]) / x[i])
-                if erro_rel > erro:
-                    erro = erro_rel
-        
-        historico.append(f"  Erro relativo máximo: {erro:.8f}\n")
-        
-        # Verificar convergência
-        if erro < tol:
-            historico.append(f"=== CONVERGÊNCIA ATINGIDA ===")
-            historico.append(f"Número de iterações: {k+1}")
-            historico.append(f"\nSolução final:")
-            for i in range(n):
-                historico.append(f"  x[{i+1}] = {x[i]:.8f}")
-            
-            return x, k + 1, historico
-    
-    historico.append(f"\nAVISO: Número máximo de iterações ({max_iter}) atingido!")
-    return x, max_iter, historico
-
-
 def gauss_seidel(A, b, x0=None, tol=0.0001, max_iter=1000):
     """
     Resolve sistema linear Ax = b usando o método de Gauss-Seidel.
@@ -167,6 +97,77 @@ def gauss_seidel(A, b, x0=None, tol=0.0001, max_iter=1000):
     historico.append("")
     historico.append(f"AVISO: Número máximo de iterações ({max_iter}) atingido!")
     return x, max_iter, historico
+
+
+def jacobi(A, b, x0=None, tol=0.0001, max_iter=1000):
+    """
+    Resolve sistema linear Ax = b usando o método de Jacobi.
+    
+    Parâmetros:
+        A: matriz de coeficientes (lista de listas)
+        b: vetor de termos independentes (lista)
+        x0: estimativa inicial (lista) - se None, usa vetor zero
+        tol: tolerância para convergência
+        max_iter: número máximo de iterações
+    
+    Retorna:
+        x: vetor solução (lista)
+        num_iter: número de iterações realizadas
+        historico: lista de iterações com valores de x
+    """
+    n = len(b)
+    
+    # Inicializar x0 se não fornecido
+    if x0 is None:
+        x = [0.0] * n
+    else:
+        x = x0[:]
+    
+    historico = []
+    historico.append("=== MÉTODO DE JACOBI ===")
+    historico.append(f"Tolerância: {tol}")
+    historico.append(f"Estimativa inicial: {[f'{val:.6f}' for val in x]}\n")
+    
+    for k in range(max_iter):
+        x_old = x[:]
+        
+        historico.append(f"--- Iteração {k+1} ---")
+        
+        # Calcular novos valores usando APENAS valores da iteração anterior
+        for i in range(n):
+            soma = 0.0
+            
+            # Somatório completo excluindo o elemento diagonal
+            for j in range(n):
+                if j != i:
+                    soma += A[i][j] * x_old[j]
+            
+            x[i] = (b[i] - soma) / A[i][i]
+            historico.append(f"  x[{i+1}] = {x[i]:.8f}")
+        
+        # Calcular erro relativo máximo
+        erro = 0.0
+        for i in range(n):
+            if x[i] != 0:
+                erro_rel = abs((x[i] - x_old[i]) / x[i])
+                if erro_rel > erro:
+                    erro = erro_rel
+        
+        historico.append(f"  Erro relativo máximo: {erro:.8f}\n")
+        
+        # Verificar convergência
+        if erro < tol:
+            historico.append(f"=== CONVERGÊNCIA ATINGIDA ===")
+            historico.append(f"Número de iterações: {k+1}")
+            historico.append(f"\nSolução final:")
+            for i in range(n):
+                historico.append(f"  x[{i+1}] = {x[i]:.8f}")
+            
+            return x, k + 1, historico
+    
+    historico.append(f"\nAVISO: Número máximo de iterações ({max_iter}) atingido!")
+    return x, max_iter, historico
+
 
 
 def formatar_sistema_matricial(A, b):
