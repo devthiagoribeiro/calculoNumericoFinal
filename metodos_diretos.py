@@ -32,10 +32,10 @@ def gauss_elimination(A, b):
     
     # Fase de eliminação
     for k in range(n - 1):
-        # Pivoteamento parcial
+        # Pivoteamento parcial 
         max_idx = k
         max_val = abs(A[k][k])
-        
+         # escolher um pivô com magnitude maior para reduz erro numérico ao dividir
         for i in range(k + 1, n):
             if abs(A[i][k]) > max_val:
                 max_val = abs(A[i][k])
@@ -60,7 +60,7 @@ def gauss_elimination(A, b):
             for j in range(k, n):
                 A[i][j] = A[i][j] - fator * A[k][j]
             
-            b[i] = b[i] - fator * b[k]
+            b[i] = b[i]-  fator * b[k]
         
         passos.append("\nSistema após eliminação:")
         passos.append(formatar_sistema(A, b))
