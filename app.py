@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from metodos_diretos import resolver_problema_minas, resolver_sistema_generico
 from metodos_iterativos import resolver_ponte_wheatstone
 from minimos_quadrados import resolver_regressoes
-from lei_moore import resolver_lei_moore
+from integracao_numerica import resolver_integracao
 
 app = Flask(__name__)
 
@@ -193,33 +193,32 @@ def calcular_regressoes():
         }), 400
 
 
-@app.route('/calcular_moore', methods=['POST'])
-def calcular_moore():
-    """Endpoint para calcular Lei de Moore"""
+@app.route('/calcular_integracao', methods=['POST'])
+def calcular_integracao():
+    """Endpoint para calcular integração numérica"""
     try:
         data = request.get_json()
         
         # Extrair dados
-        anos_str = data['anos']
-        transistores_str = data['transistores']
-        previsoes_str = data['anos_previsao']
+        x_str = data['x_valores']
+        y_str = data['y_valores']
+        metodo = data.get('metodo', 'trapezio')
         
-        # Converter strings para listas
-        anos = [int(val.strip()) for val in anos_str.split(',')]
-        num_transistores = [float(val.strip()) for val in transistores_str.split(',')]
-        anos_previsao = [int(val.strip()) for val in previsoes_str.split(',')]
+        # Converter strings para listas de floats
+        x_dados = [float(val.strip()) for val in x_str.split(',')]
+        y_dados = [float(val.strip()) for val in y_str.split(',')]
         
-        if len(anos) != len(num_transistores):
-            raise ValueError("As listas de anos e transistores devem ter o mesmo tamanho")
+        if len(x_dados) != len(y_dados):
+            raise ValueError("Os vetores x e y devem ter o mesmo tamanho")
         
-        if len(anos) < 2:
-            raise ValueError("São necessários pelo menos 2 pontos de dados")
+        if len(x_dados) < 2:
+            raise ValueError("São necessários pelo menos 2 pontos")
         
         # Resolver
-        resultado = resolver_lei_moore(anos, num_transistores, anos_previsao)
+        resultado = resolver_integracao(x_dados, y_dados, metodo)
         
         return jsonify({
-            'sucesso': True,
+            'sucesso': resultado['sucesso'],
             'resultado': resultado
         })
     
@@ -287,7 +286,7 @@ if __name__ == '__main__':
     print("  1. Problema das Minas (Métodos Diretos)")
     print("  2. Ponte de Wheatstone (Métodos Iterativos)")
     print("  3. Regressões por Mínimos Quadrados")
-    print("  4. Lei de Moore")
+    print("  4. Cálculo de Área por Integração Numérica")
     print("\nPressione Ctrl+C para encerrar")
     print("=" * 60)
     

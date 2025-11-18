@@ -1,6 +1,6 @@
 """
-Módulo: Métodos Diretos para Sistemas Lineares
-Implementa métodos numéricos para resolver sistemas Ax = b
+Métodos Diretos para Sistemas Lineares
+
 Métodos: 
     - Eliminação de Gauss com pivoteamento parcial
     - Eliminação de Gauss-Jordan
@@ -112,7 +112,7 @@ def gauss_jordan_elimination(A, b):
         # Pivoteamento parcial
         max_idx = k
         max_val = abs(A[k][k])
-        
+        # escolher um pivô com magnitude maior para reduz erro numérico ao dividir
         for i in range(k + 1, n):
             if abs(A[i][k]) > max_val:
                 max_val = abs(A[i][k])

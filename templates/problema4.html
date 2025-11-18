@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Problema 4: Lei de Moore - Cálculo Numérico</title>
+    <title>Problema 4: Integração Numérica - Cálculo Numérico</title>
     <style>
         * {
             margin: 0;
@@ -145,6 +145,13 @@
             color: #333;
         }
         
+        .resultado-item .area-valor {
+            font-size: 1.3em;
+            color: #2196F3;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        
         pre {
             background: #2d2d2d;
             color: #f8f8f2;
@@ -175,7 +182,7 @@
             border: 1px solid #d0d0d0;
         }
         
-        .previsao-card {
+        .integracao-card {
             background: #f1f8e9;
             border: 2px solid #aed581;
             border-radius: 8px;
@@ -183,9 +190,54 @@
             margin-bottom: 15px;
         }
         
-        .previsao-card h4 {
+        .integracao-card h4 {
             color: #555555;
             margin-bottom: 10px;
+        }
+        
+        .metodo-comparacao {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .metodo-box {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .metodo-box h5 {
+            color: #555555;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .metodo-box .valor {
+            font-size: 1.2em;
+            color: #2196F3;
+            font-weight: bold;
+        }
+        
+        details {
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        
+        details summary {
+            font-weight: bold;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 5px;
+            user-select: none;
+        }
+        
+        details summary:hover {
+            background: #bbdefb;
         }
         
         textarea {
@@ -208,47 +260,46 @@
     <div class="container">
         <header>
             <a href="/" class="back-link">← Voltar ao Menu</a>
-            <h1>💻 Problema 4: Lei de Moore</h1>
-            <p>Previsão usando Regressão Logarítmica</p>
+            <h1>📐 Problema 4: Integração Numérica</h1>
+            <p>Cálculo de área por Trapézio e Simpson 1/3</p>
         </header>
         
         <div class="content">
             <div class="description">
                 <h3>Descrição do Problema</h3>
-                <p>A Lei de Moore prevê que o número de transistores em circuitos integrados dobra 
-                   aproximadamente a cada dois anos. Use regressão logarítmica para modelar os dados 
-                   históricos e fazer previsões futuras.</p>
-                <p style="margin-top: 10px;"><strong>Método utilizado:</strong> Regressão Linear sobre log₁₀(N) 
-                   (implementado manualmente).</p>
+                <p>Calcular a área da seção reta de um rio/lago utilizando métodos de integração numérica. 
+                   Com base em medições de profundidade em pontos igualmente espaçados, determinar o volume 
+                   total de água.</p>
+                <p style="margin-top: 10px;"><strong>Métodos utilizados:</strong></p>
+                <ul style="margin-top: 8px; margin-left: 20px;">
+                    <li><strong>Trapézio:</strong> Aproximação linear entre pontos consecutivos</li>
+                    <li><strong>Simpson 1/3:</strong> Aproximação quadrática (requer número par de intervalos)</li>
+                    <li><strong>Híbrido:</strong> Simpson nos primeiros n-1 intervalos + Trapézio no último</li>
+                </ul>
                 <div class="info-box">
-                    <strong>Exemplo de dados históricos:</strong><br>
-                    Anos: 1971, 1972, 1974, 1978, 1982, 1985<br>
-                    Transistores: 2300, 3500, 4500, 29000, 134000, 275000
+                    <strong>Dados do Problema (da Figura):</strong><br>
+                    Distância (m): 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20<br>
+                    Profundidade (m): 0.0, 1.8, 2.0, 1.1, 2.0, 4.0, 4.0, 6.0, 4.0, 3.6, 3.4
                 </div>
             </div>
             
-            <form id="formMoore">
+            <form id="formIntegracao">
                 <div class="form-section">
-                    <h3>Dados Históricos</h3>
+                    <h3>Dados de Profundidade</h3>
                     <div class="form-group">
-                        <label>Anos (separados por vírgula):</label>
-                        <input type="text" id="anos" value="1971, 1972, 1974, 1978, 1982, 1985" required>
+                        <label>Distâncias (m) - separadas por vírgula:</label>
+                        <input type="text" id="x_valores" value="0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20" required>
                     </div>
                     <div class="form-group">
-                        <label>Número de Transistores (separados por vírgula):</label>
-                        <input type="text" id="transistores" value="2300, 3500, 4500, 29000, 134000, 275000" required>
+                        <label>Profundidades (m) - separadas por vírgula:</label>
+                        <input type="text" id="y_valores" value="0.0, 1.8, 2.0, 1.1, 2.0, 4.0, 4.0, 6.0, 4.0, 3.6, 3.4" required>
                     </div>
+                    <p style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                        <strong>Nota:</strong> Os vetores de distâncias e profundidades devem ter o mesmo número de elementos.
+                    </p>
                 </div>
                 
-                <div class="form-section">
-                    <h3>Anos para Previsão</h3>
-                    <div class="form-group">
-                        <label>Anos (separados por vírgula):</label>
-                        <input type="text" id="anos_previsao" value="2010, 2020" required>
-                    </div>
-                </div>
-                
-                <button type="submit">Calcular Previsões</button>
+                <button type="submit">Calcular Áreas</button>
             </form>
             
             <div id="resultado">
@@ -259,7 +310,7 @@
     </div>
     
     <script>
-        document.getElementById('formMoore').addEventListener('submit', async (e) => {
+        document.getElementById('formIntegracao').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const button = e.target.querySelector('button');
@@ -267,13 +318,13 @@
             button.textContent = 'Calculando...';
             
             const dados = {
-                anos: document.getElementById('anos').value,
-                transistores: document.getElementById('transistores').value,
-                anos_previsao: document.getElementById('anos_previsao').value
+                x_valores: document.getElementById('x_valores').value,
+                y_valores: document.getElementById('y_valores').value,
+                metodo: 'trapezio'
             };
             
             try {
-                const response = await fetch('/calcular_moore', {
+                const response = await fetch('/calcular_integracao', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(dados)
@@ -285,51 +336,77 @@
                     const r = result.resultado;
                     let html = '';
                     
-                    // Modelo de regressão
+                    // Informações gerais
                     html += `
                         <div class="resultado-item">
-                            <strong>Modelo Logarítmico:</strong> ${r.equacao_log}
-                        </div>
-                        <div class="resultado-item">
-                            <strong>Coeficiente a:</strong> ${r.coef_a.toFixed(6)}
-                        </div>
-                        <div class="resultado-item">
-                            <strong>Coeficiente b (taxa de crescimento):</strong> ${r.coef_b.toFixed(6)}
-                        </div>
-                        <div class="resultado-item">
-                            <strong>Erro Quadrático:</strong> ${r.erro.toFixed(6)}
+                            <strong>Número de pontos:</strong> ${r.numero_pontos}
                         </div>
                     `;
                     
-                    // Previsões
-                    html += '<h3 style="margin-top: 20px; color: #667eea;">Previsões</h3>';
+                    // Método Trapézio
+                    if (r.resultados.trapezio && !r.resultados.trapezio.erro) {
+                        const trap = r.resultados.trapezio;
+                        html += `
+                            <div class="integracao-card">
+                                <h4>📊 Método do Trapézio</h4>
+                                <div class="resultado-item">
+                                    <strong>Descrição:</strong> Aproximação linear entre pontos consecutivos
+                                    <div class="area-valor">Área = ${trap.area.toFixed(6)} m²</div>
+                                </div>
+                                <details>
+                                    <summary>Ver detalhes do cálculo</summary>
+                                    <pre>${trap.detalhes}</pre>
+                                </details>
+                            </div>
+                        `;
+                    }
                     
-                    r.previsoes.forEach(prev => {
-                        const numFormatado = prev.N.toLocaleString('pt-BR', {maximumFractionDigits: 0});
-                        const numCientifico = prev.N.toExponential(2);
+                    // Método Simpson
+                    if (r.resultados.simpson && !r.resultados.simpson.erro) {
+                        const simp = r.resultados.simpson;
+                        html += `
+                            <div class="integracao-card">
+                                <h4>📈 Método de Simpson 1/3 (Híbrido)</h4>
+                                <div class="resultado-item">
+                                    <strong>Descrição:</strong> Simpson 1/3 + Trapézio (quando necessário)
+                                    <div class="area-valor">Área = ${simp.area.toFixed(6)} m²</div>
+                                </div>
+                                <details>
+                                    <summary>Ver detalhes do cálculo</summary>
+                                    <pre>${simp.detalhes}</pre>
+                                </details>
+                            </div>
+                        `;
+                    }
+                    
+                    // Comparação
+                    if (r.resultados.trapezio && r.resultados.simpson && !r.resultados.trapezio.erro && !r.resultados.simpson.erro) {
+                        const trap = r.resultados.trapezio;
+                        const simp = r.resultados.simpson;
+                        const diferenca = Math.abs(trap.area - simp.area);
+                        const percentual = (diferenca / simp.area * 100).toFixed(2);
                         
                         html += `
-                            <div class="previsao-card">
-                                <h4>📅 Ano ${prev.ano}</h4>
-                                <div style="margin-top: 10px;">
-                                    <strong>log₁₀(N):</strong> ${prev.log_N.toFixed(6)}<br>
-                                    <strong>Número de transistores:</strong><br>
-                                    &nbsp;&nbsp;• Notação científica: ${numCientifico}<br>
-                                    &nbsp;&nbsp;• Valor aproximado: ${numFormatado} transistores
+                            <div class="resultado-item" style="background: #fff3e0; border-left-color: #ff9800;">
+                                <strong>Comparação de Métodos:</strong><br>
+                                <div class="metodo-comparacao">
+                                    <div class="metodo-box">
+                                        <h5>Trapézio</h5>
+                                        <div class="valor">${trap.area.toFixed(6)}</div>
+                                        <p style="margin-top: 5px; color: #666;">m²</p>
+                                    </div>
+                                    <div class="metodo-box">
+                                        <h5>Simpson (Híbrido)</h5>
+                                        <div class="valor">${simp.area.toFixed(6)}</div>
+                                        <p style="margin-top: 5px; color: #666;">m²</p>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+                                    <strong>Diferença:</strong> ${diferenca.toFixed(6)} m² (${percentual}%)
                                 </div>
                             </div>
                         `;
-                    });
-                    
-                    // Detalhes completos
-                    html += `
-                        <details style="margin-top: 20px;">
-                            <summary style="cursor: pointer; font-weight: bold; padding: 10px; background: #e3f2fd; border-radius: 5px;">
-                                Ver todos os detalhes dos cálculos
-                            </summary>
-                            <pre>${r.detalhes}</pre>
-                        </details>
-                    `;
+                    }
                     
                     document.getElementById('conteudoResultado').innerHTML = html;
                     document.getElementById('resultado').style.display = 'block';
@@ -347,7 +424,7 @@
             }
             
             button.disabled = false;
-            button.textContent = 'Calcular Previsões';
+            button.textContent = 'Calcular Áreas';
         });
     </script>
 </body>
